@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, type ReactNode } from 'react';
-import DesktopOutlined from '@/assets/images/desktop-outlined.svg?react';
+import Automatic from '@/assets/images/automatic.svg?react';
 import SunOutlined from '@/assets/images/sun-outlined.svg?react';
 import MoonOutlined from '@/assets/images/moon-outlined.svg?react';
 import stateConfig from '~@/slate.config';
@@ -9,7 +9,7 @@ import { ThemeValue } from '@/typings/global';
 
 const THEME_LIST: Array<{ icon: ReactNode; value: ThemeValue }> = [
   {
-    icon: <DesktopOutlined className="h-4 w-4" />,
+    icon: <Automatic className="h-4 w-4" />,
     value: ThemeValue.Auto,
   },
   {

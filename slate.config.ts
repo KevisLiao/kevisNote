@@ -5,19 +5,19 @@ import { defineConfig } from './src/helpers/config-helper';
 
 export default defineConfig({
   lang: 'en-US',
-  site: 'https://slate-blog-demo.vercel.app',
+  site: 'https://note.kevisliao.com',
   avatar: '/avatar.png',
-  title: 'Slate Blog',
-  description: 'Pure thoughts, simple stories.',
+  title: 'Kevis\'s Note',
+  description: '人文主义视角下的科技思辨',
   lastModified: true,
   readTime: true,
   footer: {
-    copyright: '© 2025 Slate Design',
+    copyright: '© 2026 Kevis Liao',
   },
-  socialLinks: [
-    {
-      icon: 'github',
-      link: 'https://github.com/SlateDesign/slate-blog'
-    },
-]
+  // socialLinks: [
+  //   {
+  //     icon: 'github',
+  //     link: 'https://github.com/kevisliao'
+  //   },
+  // ]
 });

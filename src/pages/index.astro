@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import i18next from '@/i18n';
+// import i18next from '@/i18n';
 import Search from '@/components/search';
 import PageLayout from '@/components/layouts/PageLayout.astro';
 // import Button from '@/components/button';
@@ -10,30 +10,30 @@ const postCollection = await getCollection('post', ({ data }) => {
   return import.meta.env.DEV || data.draft !== true;
 });
 
-const tagCounts = postCollection.reduce<Record<string, number>>(
-  (res, post) => {
-    const postTags = post.data.tags;
-    if (!postTags || !postTags.length) return res;
-    postTags.forEach((tag) => {
-      if (tag.trim() === '') return;
+// const tagCounts = postCollection.reduce<Record<string, number>>(
+//   (res, post) => {
+//     const postTags = post.data.tags;
+//     if (!postTags || !postTags.length) return res;
+//     postTags.forEach((tag) => {
+//       if (tag.trim() === '') return;
 
-      if (res[tag]) {
-        res[tag]++;
-      } else {
-        res[tag] = 1;
-      }
-    });
-    return res;
-  },
-  {
-    [i18next.t('common.all')]: postCollection.length,
-  },
-);
+//       if (res[tag]) {
+//         res[tag]++;
+//       } else {
+//         res[tag] = 1;
+//       }
+//     });
+//     return res;
+//   },
+//   {
+//     [i18next.t('common.all')]: postCollection.length,
+//   },
+// );
 
-const tags = Object.keys(tagCounts).map((tag) => ({
-  name: tag,
-  count: tagCounts[tag],
-}));
+// const tags = Object.keys(tagCounts).map((tag) => ({
+//   name: tag,
+//   count: tagCounts[tag],
+// }));
 
 const posts = [...postCollection]
   .sort((a, b) => b.data.pubDate!.getTime() - a.data.pubDate!.getTime())
@@ -79,7 +79,7 @@ const posts = [...postCollection]
   </section>
 
   <!-- S 标签 -->
-  <section class="mb-16">
+  <!-- <section class="mb-16">
     <ul class="flex flex-wrap gap-2 text-base text-slate10">
       {
         tags.map(({ name, count }) => (
@@ -90,6 +90,6 @@ const posts = [...postCollection]
         ))
       }
     </ul>
-  </section>
+  </section> -->
   <!-- E 标签 -->
 </PageLayout>
