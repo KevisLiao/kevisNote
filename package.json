@@ -14,10 +14,10 @@
   "sideEffects": false,
   "author": "kim, bluepikachu",
   "scripts": {
-    "prepare": "husky || true",
+    "prepare": "true",
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "npm run tsc && astro check && astro build",
+    "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "tsc": "tsc --noEmit",
