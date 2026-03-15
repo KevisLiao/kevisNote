@@ -14,7 +14,7 @@
   "sideEffects": false,
   "author": "kim, bluepikachu",
   "scripts": {
-    "prepare": "husky",
+    "prepare": "husky || true",
     "dev": "astro dev",
     "start": "astro dev",
     "build": "npm run tsc && astro check && astro build",
