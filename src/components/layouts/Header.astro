@@ -1,15 +1,33 @@
 ---
 import slateConfig from '~@/slate.config';
+import { localeMeta, getTranslations } from '@/i18n';
+import type { LocaleCode } from '@/typings/config';
 
 interface Props {
   avatar?: string;
+  locale?: LocaleCode;
 }
 
-const { avatar = slateConfig.avatar } = Astro.props;
+const {
+  avatar = slateConfig.avatar,
+  locale = (Astro.currentLocale as LocaleCode) ?? slateConfig.i18n.defaultLocale,
+} = Astro.props;
+
+const t = getTranslations(locale);
+const homeHref = `/${locale}/`;
+
+// Same path under each locale prefix, so switching keeps the reader in place.
+const restPath = Astro.url.pathname.replace(/^\/[^/]+/, '');
+const localeLinks = slateConfig.i18n.locales.map((code) => ({
+  code,
+  label: localeMeta[code]?.label ?? code,
+  href: `/${code}${restPath}`,
+  active: code === locale,
+}));
 ---
 
-<header>
-  <div class="mb-9 h-14 w-14 whitespace-nowrap text-[0px]">
+<header class="mb-9 flex items-start justify-between">
+  <a href={homeHref} class="block h-14 w-14 whitespace-nowrap text-[0px]">
     <img
       class="block h-full w-full rounded-full border-2 border-white bg-slate2 shadow-xs outline-1 outline-slate3"
       src={avatar}
@@ -17,5 +35,28 @@ const { avatar = slateConfig.avatar } = Astro.props;
       draggable="false"
     />
     <span>{slateConfig.title}</span>
-  </div>
+  </a>
+
+  {
+    localeLinks.length > 1 && (
+      <nav class="flex items-center gap-2 text-sm" aria-label={t('common.language')}>
+        {localeLinks.map(({ label, href, active }, i) => (
+          <>
+            {i > 0 && <span class="text-slate6">/</span>}
+            <a
+              href={href}
+              class={
+                active
+                  ? 'text-slate12 font-medium'
+                  : 'text-slate9 transition-colors hover:text-slate11'
+              }
+              aria-current={active ? 'true' : undefined}
+            >
+              {label}
+            </a>
+          </>
+        ))}
+      </nav>
+    )
+  }
 </header>

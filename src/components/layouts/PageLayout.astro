@@ -5,20 +5,33 @@ import Footer from './Footer.astro';
 import NormalJsonLd from '@/components/json-ld/normal.astro';
 import slateConfig from '~@/slate.config';
 import { getFullTitle } from '@/helpers/utils';
+import { localeMeta } from '@/i18n';
+import type { LocaleCode } from '@/typings/config';
 import '@/assets/style/common.css';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  locale?: LocaleCode;
 }
 
 const {
   title = '',
   description = slateConfig.description,
   image = '/og_image.png',
+  locale = (Astro.currentLocale as LocaleCode) ?? slateConfig.i18n.defaultLocale,
 } = Astro.props;
 const fullTitle = getFullTitle(title);
+const htmlLang = localeMeta[locale]?.htmlLang ?? locale;
+
+// hreflang alternates: same path with each locale's prefix swapped in.
+const restPath = Astro.url.pathname.replace(/^\/[^/]+/, '');
+const alternates = slateConfig.i18n.locales.map((code) => ({
+  hreflang: localeMeta[code]?.htmlLang ?? code,
+  href: new URL(`/${code}${restPath}`, Astro.site).href,
+}));
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
 
 // remark: Temporary solution to refresh theme flicker issue
 const themeScript = `
@@ -41,9 +54,16 @@ const themeScript = `
 ---
 
 <!doctype html>
-<html lang={slateConfig.lang}>
+<html lang={htmlLang}>
   <head>
-    <HeadMeta title={fullTitle} description={description} image={image} />
+    <HeadMeta
+      title={fullTitle}
+      description={description}
+      image={image}
+      locale={locale}
+      canonical={canonical}
+      alternates={alternates}
+    />
     <slot name="json-ld">
       <NormalJsonLd title={fullTitle} description={description} image={image} />
     </slot>
@@ -52,7 +72,7 @@ const themeScript = `
   <body class="bg-slate1">
     <div class="m-auto flex min-h-dvh max-w-180 flex-col px-6 pb-6 pt-18">
       <slot name="header">
-        <Header />
+        <Header locale={locale} />
       </slot>
       <slot />
       <slot name="footer">

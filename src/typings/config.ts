@@ -3,6 +3,17 @@ import type { SitemapOptions } from '@astrojs/sitemap';
 export const languages = ['zh-CN', 'en-US'] as const;
 export type LangType = (typeof languages)[number];
 
+/** Route locale codes used as URL prefixes (`/zh`, `/en`, ...) */
+export const localeCodes = ['zh', 'en'] as const;
+export type LocaleCode = (typeof localeCodes)[number];
+
+export interface I18nConfig {
+  /** Default locale; also the human source language for auto-translation */
+  defaultLocale: LocaleCode;
+  /** All routable locales (each gets a URL prefix) */
+  locales: LocaleCode[];
+}
+
 export const theme = ['auto', 'light', 'dark'] as const;
 /** Theme mode */
 export type ThemeMode = (typeof theme)[number];
@@ -40,6 +51,8 @@ export interface SlateConfig {
   site: string;
   /** Language */
   lang?: LangType;
+  /** Multilingual routing configuration (defaulted by `defineConfig`) */
+  i18n: I18nConfig;
   /** Theme */
   theme?: ThemeOptions;
   /** Avatar */

@@ -12,9 +12,16 @@ const defaultConfig: Partial<SlateConfig> = {
   },
   readTime: false,
   lastModified: false,
+  i18n: {
+    defaultLocale: 'zh',
+    locales: ['zh'],
+  },
 };
 
-export function defineConfig(config: SlateConfig): SlateConfig {
+/** Input config; i18n is optional here and defaulted below. */
+type SlateConfigInput = Omit<SlateConfig, 'i18n'> & Partial<Pick<SlateConfig, 'i18n'>>;
+
+export function defineConfig(config: SlateConfigInput): SlateConfig {
   const mergedConfig: Partial<SlateConfig> = {};
 
   if (typeof config.theme === 'string') {
@@ -29,5 +36,5 @@ export function defineConfig(config: SlateConfig): SlateConfig {
     };
   }
 
-  return Object.assign({}, defaultConfig, config, mergedConfig);
+  return Object.assign({}, defaultConfig, config, mergedConfig) as SlateConfig;
 }

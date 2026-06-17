@@ -26,6 +26,16 @@ function generateAstroConfigure() {
   const astroConfig = {
     site: slateConfig.site,
     integrations: computedIntegrations(),
+    i18n: {
+      defaultLocale: slateConfig.i18n.defaultLocale,
+      locales: slateConfig.i18n.locales,
+      routing: {
+        prefixDefaultLocale: true,
+        // We provide our own `/` redirect (Accept-Language at the edge via a
+        // Cloudflare Pages Function; navigator.language fallback in src/pages/index.astro).
+        redirectToDefaultLocale: false,
+      },
+    },
     markdown: {
       remarkPlugins: [
         remarkGemoji,
