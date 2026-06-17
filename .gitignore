@@ -3,6 +3,10 @@ dist/
 # generated types
 .astro/
 
+# AI-generated translation fallbacks + translation cache (never committed)
+src/content/post/**/*.auto.md
+.translations/
+
 # dependencies
 node_modules/
 

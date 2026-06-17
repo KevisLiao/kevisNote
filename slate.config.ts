@@ -11,6 +11,19 @@ export default defineConfig({
   description: '人文主义视角下的科技思辨',
   lastModified: true,
   readTime: true,
+  i18n: {
+    defaultLocale: 'zh',
+    locales: ['zh', 'en'],
+  },
+  sitemap: {
+    i18n: {
+      defaultLocale: 'zh',
+      locales: {
+        zh: 'zh-CN',
+        en: 'en',
+      },
+    },
+  },
   footer: {
     copyright: '© 2026 Kevis Liao',
   },
