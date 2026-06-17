@@ -1,4 +1,9 @@
 export default {
+  /** site-wide strings */
+  site: {
+    /** subtitle / tagline shown on the home page and as meta description */
+    description: 'Reflections on technology through a humanist lens',
+  },
   common: {
     /** all tags */
     all: 'All',
