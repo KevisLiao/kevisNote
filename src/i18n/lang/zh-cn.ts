@@ -1,4 +1,9 @@
 export default {
+  /** site-wide strings */
+  site: {
+    /** subtitle / tagline shown on the home page and as meta description */
+    description: '人文主义视角下的科技思辨',
+  },
   common: {
     /** all tags */
     all: '全部',

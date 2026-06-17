@@ -5,7 +5,7 @@ import Footer from './Footer.astro';
 import NormalJsonLd from '@/components/json-ld/normal.astro';
 import slateConfig from '~@/slate.config';
 import { getFullTitle } from '@/helpers/utils';
-import { localeMeta } from '@/i18n';
+import { localeMeta, getTranslations } from '@/i18n';
 import type { LocaleCode } from '@/typings/config';
 import '@/assets/style/common.css';
 
@@ -18,10 +18,12 @@ interface Props {
 
 const {
   title = '',
-  description = slateConfig.description,
+  description,
   image = '/og_image.png',
   locale = (Astro.currentLocale as LocaleCode) ?? slateConfig.i18n.defaultLocale,
 } = Astro.props;
+// Fall back to the locale-specific site tagline when no page description is given.
+const resolvedDescription = description ?? getTranslations(locale)('site.description');
 const fullTitle = getFullTitle(title);
 const htmlLang = localeMeta[locale]?.htmlLang ?? locale;
 
@@ -58,14 +60,14 @@ const themeScript = `
   <head>
     <HeadMeta
       title={fullTitle}
-      description={description}
+      description={resolvedDescription}
       image={image}
       locale={locale}
       canonical={canonical}
       alternates={alternates}
     />
     <slot name="json-ld">
-      <NormalJsonLd title={fullTitle} description={description} image={image} />
+      <NormalJsonLd title={fullTitle} description={resolvedDescription} image={image} />
     </slot>
     <script set:html={themeScript}></script>
   </head>

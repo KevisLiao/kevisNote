@@ -2,7 +2,7 @@
 import Search from '@/components/search';
 import PageLayout from '@/components/layouts/PageLayout.astro';
 import slateConfig from '~@/slate.config';
-import { localeMeta } from '@/i18n';
+import { localeMeta, getTranslations } from '@/i18n';
 import { getLocalizedPosts, i18nConfig } from '@/helpers/posts';
 import type { LocaleCode } from '@/typings/config';
 
@@ -11,6 +11,7 @@ export async function getStaticPaths() {
 }
 
 const locale = Astro.params.lang as LocaleCode;
+const t = getTranslations(locale);
 const resolved = await getLocalizedPosts(locale);
 const dateLocale = localeMeta[locale]?.htmlLang ?? locale;
 
@@ -26,7 +27,7 @@ const posts = resolved.map((post) => ({
     <h3 class="text-[40px] font-semibold leading-tight text-slate12">
       {slateConfig.title}
     </h3>
-    <p class="text-xl text-slate10">{slateConfig.description}</p>
+    <p class="text-xl text-slate10">{t('site.description')}</p>
     <Search
       client:only="react"
       className="absolute right-0 top-1/2 -translate-y-1/2"
