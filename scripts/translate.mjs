@@ -1,18 +1,23 @@
 /*
- * Build-time auto-translation (Google Gemini, free tier).
+ * Manual auto-translation (Google Gemini, free tier).
+ *
+ * Run locally with `npm run translate` — it is NOT part of `dev`/`build`, so no
+ * tokens are spent on every Cloudflare build. The generated `*.auto.md` files
+ * ARE committed to the repo; the build just serves whatever exists (human
+ * `<locale>.md` > AI `<locale>.auto.md` > zh source fallback).
  *
  * For every article folder under `src/content/post/<slug>/`, generates a
  * machine-translated `<locale>.auto.md` for each target locale that has no
  * human-authored `<locale>.md`. Source language is `zh`. Results are cached by
- * source-content hash under `.translations/cache/` so unchanged posts are not
- * re-translated. Generated `*.auto.md` files and the cache are gitignored.
+ * source-content hash under `.translations/cache/` (gitignored) so unchanged
+ * posts are not re-translated.
  *
  * Gemini is an LLM that understands Markdown, so the whole file is translated
  * in one shot with a system instruction that preserves structure (only prose +
  * the `title`/`description` frontmatter values change).
  *
  * Skips silently (leaving any existing `.auto.md` in place) when
- * GEMINI_API_KEY is unset, so contributors without a key can still build.
+ * GEMINI_API_KEY is unset.
  *
  * Keep LOCALES / SOURCE_LOCALE in sync with `slate.config.ts` → `i18n`.
  */

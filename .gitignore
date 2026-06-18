@@ -3,8 +3,9 @@ dist/
 # generated types
 .astro/
 
-# AI-generated translation fallbacks + translation cache (never committed)
-src/content/post/**/*.auto.md
+# Translation cache (regenerated locally; not committed).
+# Note: AI-generated *.auto.md ARE committed — translation is run manually
+# (`npm run translate`), not at build time.
 .translations/
 
 # dependencies

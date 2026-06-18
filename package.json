@@ -16,9 +16,9 @@
   "scripts": {
     "prepare": "true",
     "translate": "node scripts/translate.mjs",
-    "dev": "npm run translate && astro dev",
-    "start": "npm run dev",
-    "build": "npm run translate && astro build",
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "tsc": "tsc --noEmit",
