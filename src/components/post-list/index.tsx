@@ -23,7 +23,9 @@ interface Props {
   };
 }
 
-const SortIcon = () => (
+// Lucide-style sort glyph: a directional arrow plus graduated bars.
+// Flips with the order — down/wide→narrow for desc, up/narrow→wide for asc.
+const SortIcon = ({ order }: { order: Order }) => (
   <svg
     className="h-4 w-4"
     viewBox="0 0 24 24"
@@ -34,8 +36,23 @@ const SortIcon = () => (
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    <path d="M7 4v16M7 4 4 7M7 4l3 3" />
-    <path d="M17 20V4M17 20l-3-3M17 20l3 3" />
+    {order === 'desc' ? (
+      <>
+        <path d="m3 16 4 4 4-4" />
+        <path d="M7 20V4" />
+        <path d="M11 4h10" />
+        <path d="M11 8h7" />
+        <path d="M11 12h4" />
+      </>
+    ) : (
+      <>
+        <path d="m3 8 4-4 4 4" />
+        <path d="M7 4v16" />
+        <path d="M11 12h4" />
+        <path d="M11 16h7" />
+        <path d="M11 20h10" />
+      </>
+    )}
   </svg>
 );
 
@@ -87,7 +104,7 @@ const PostList = ({ posts, labels }: Props) => {
             aria-label={labels.sort}
             onClick={() => setOpen((o) => !o)}
           >
-            <SortIcon />
+            <SortIcon order={order} />
             <span>{order === 'desc' ? labels.desc : labels.asc}</span>
           </button>
 
