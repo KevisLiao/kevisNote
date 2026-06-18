@@ -6,6 +6,7 @@ import PageLayout from '@/components/layouts/PageLayout.astro';
 import ArticleJsonLd from '@/components/json-ld/article.astro';
 import Button from '@/components/button';
 import AffixTitle from '@/components/affix-title';
+import Share from '@/components/share';
 import Toc from '@/components/toc';
 import CodeGroupEvent from '@/components/code-group-event';
 import slateConfig from '~@/slate.config';
@@ -37,6 +38,17 @@ const formattedPubDate = pubDate.isSame(dayjs(), 'year')
   ? pubDate.format('MMM DD')
   : pubDate.format('MMM DD, YYYY');
 const homeHref = `/${locale}/`;
+
+const shareLabels = {
+  label: t('blog.share.label'),
+  copyLink: t('blog.share.copyLink'),
+  copied: t('blog.share.copied'),
+  x: t('blog.share.shareTo', { platform: 'X' }),
+  facebook: t('blog.share.shareTo', { platform: 'Facebook' }),
+  linkedin: t('blog.share.shareTo', { platform: 'LinkedIn' }),
+  threads: t('blog.share.shareTo', { platform: 'Threads' }),
+  mail: t('blog.share.shareViaEmail'),
+};
 ---
 
 <PageLayout title={entry.data.title} description={entry.data.description} locale={locale}>
@@ -86,6 +98,13 @@ const homeHref = `/${locale}/`;
         </div>
       )
     }
+    <Share
+      title={entry.data.title}
+      url={Astro.url.href}
+      labels={shareLabels}
+      className="mt-12 border-t border-slate4 pt-6"
+      client:idle
+    />
   </div>
   <!-- E 内容 -->
   <!-- S 目录 -->

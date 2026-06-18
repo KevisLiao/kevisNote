@@ -24,6 +24,19 @@ export default {
     readingTime: '{{minutes}} 分钟阅读',
     /** AI auto-translation notice shown atop machine-translated articles */
     aiTranslated: '本文由 AI 自动翻译，可能存在偏差。',
+    /** article sharing */
+    share: {
+      /** section label */
+      label: '分享',
+      /** copy-link button label */
+      copyLink: '复制链接',
+      /** feedback after the link is copied */
+      copied: '链接已复制',
+      /** aria-label template for social platforms */
+      shareTo: '分享到 {{platform}}',
+      /** aria-label for email sharing */
+      shareViaEmail: '通过邮件分享',
+    },
   },
   404: {
     pageText: '你访问的页面不存在',
