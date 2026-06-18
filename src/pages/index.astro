@@ -1,8 +1,9 @@
 ---
 // Root `/` has no content of its own — it redirects to a locale-prefixed home.
 // In production the Cloudflare Pages Function at `functions/index.ts` handles this
-// at the edge using `Accept-Language`. This page is the local-dev / preview fallback
-// (CF Functions don't run under `astro dev`), choosing a locale from `navigator.language`.
+// at the edge. This page is the local-dev / preview fallback (CF Functions don't run
+// under `astro dev`). It honors a manually-chosen `locale` cookie first, then
+// `navigator.language`, then the default locale.
 import slateConfig from '~@/slate.config';
 
 const { defaultLocale, locales } = slateConfig.i18n;
@@ -10,9 +11,11 @@ const redirectScript = `
   (function () {
     var locales = ${JSON.stringify(locales)};
     var fallback = ${JSON.stringify(defaultLocale)};
+    var cookie = (document.cookie.match(/(?:^|;\\s*)locale=([^;]+)/) || [])[1];
     var nav = (navigator.language || fallback).toLowerCase();
-    var match = locales.find(function (code) { return nav.indexOf(code) === 0; });
-    window.location.replace('/' + (match || fallback) + '/');
+    var byNav = locales.find(function (code) { return nav.indexOf(code) === 0; });
+    var target = (locales.indexOf(cookie) !== -1 ? cookie : null) || byNav || fallback;
+    window.location.replace('/' + target + '/');
   })();
 `;
 const noscriptHref = `/${defaultLocale}/`;
