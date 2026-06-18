@@ -1,0 +1,32 @@
+.sb-share-icon {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: currentColor;
+  mask: var(--icon) no-repeat;
+  mask-size: 100% 100%;
+
+  &.x {
+    --icon: url('../../assets/images/x.svg');
+  }
+
+  &.facebook {
+    --icon: url('../../assets/images/facebook.svg');
+  }
+
+  &.in {
+    --icon: url('../../assets/images/in.svg');
+  }
+
+  &.threads {
+    --icon: url('../../assets/images/threads.svg');
+  }
+
+  &.mail {
+    --icon: url('../../assets/images/mail.svg');
+  }
+
+  &.link {
+    --icon: url('../../assets/images/link.svg');
+  }
+}

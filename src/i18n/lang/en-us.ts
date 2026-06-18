@@ -26,7 +26,20 @@ export default {
     /** reading time */
     readingTime: '{{minutes}} Min Read',
     /** AI auto-translation notice shown atop machine-translated articles */
-    aiTranslated: 'This article was machine-translated by AI and may contain inaccuracies.'
+    aiTranslated: 'This article was machine-translated by AI and may contain inaccuracies.',
+    /** article sharing */
+    share: {
+      /** section label */
+      label: 'Share',
+      /** copy-link button label */
+      copyLink: 'Copy link',
+      /** feedback after the link is copied */
+      copied: 'Link copied',
+      /** aria-label template for social platforms */
+      shareTo: 'Share on {{platform}}',
+      /** aria-label for email sharing */
+      shareViaEmail: 'Share via email',
+    }
   },
   /** 404 page */
   404: {
