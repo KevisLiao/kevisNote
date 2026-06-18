@@ -10,6 +10,15 @@ export default {
     /** language switcher aria label */
     language: 'Language',
   },
+  /** home page */
+  home: {
+    /** sort control aria label */
+    sort: 'Sort',
+    /** descending = newest first (default) */
+    sortDesc: 'Newest',
+    /** ascending = oldest first */
+    sortAsc: 'Oldest',
+  },
   /** blog page */
   blog: {
     /** last modified */

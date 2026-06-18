@@ -1,5 +1,6 @@
 ---
 import Search from '@/components/search';
+import PostList from '@/components/post-list';
 import PageLayout from '@/components/layouts/PageLayout.astro';
 import slateConfig from '~@/slate.config';
 import { localeMeta, getTranslations } from '@/i18n';
@@ -15,11 +16,24 @@ const t = getTranslations(locale);
 const resolved = await getLocalizedPosts(locale);
 const dateLocale = localeMeta[locale]?.htmlLang ?? locale;
 
+// resolved is already newest-first; PostList re-sorts client-side on demand.
 const posts = resolved.map((post) => ({
   url: `/${locale}/blog/${post.slug}`,
   title: post.entry.data.title,
-  pubDate: post.entry.data.pubDate,
+  date:
+    post.entry.data.pubDate?.toLocaleDateString(dateLocale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }) ?? '',
+  time: post.entry.data.pubDate?.getTime() ?? 0,
 }));
+
+const sortLabels = {
+  sort: t('home.sort'),
+  desc: t('home.sortDesc'),
+  asc: t('home.sortAsc'),
+};
 ---
 
 <PageLayout locale={locale}>
@@ -35,21 +49,6 @@ const posts = resolved.map((post) => ({
   </section>
 
   <section class="mb-16">
-    <div class="text-base text-slate12">
-      {
-        posts.map((item) => (
-          <a class="flex cursor-pointer flex-col gap-1 rounded-lg py-2.5 transition-all active:scale-[0.995] active:bg-slate4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-x-6 sm:px-2 sm:hover:bg-slate3" href={item.url} title={item.title}>
-            <span class="min-w-0">{item.title}</span>
-            <span class="shrink-0 whitespace-nowrap text-slate8">
-              {item.pubDate?.toLocaleDateString(dateLocale, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-              })}
-            </span>
-          </a>
-        ))
-      }
-    </div>
+    <PostList client:idle posts={posts} labels={sortLabels} />
   </section>
 </PageLayout>
