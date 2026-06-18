@@ -2,7 +2,7 @@
 title: "The Right Path and the Besieged City: A Former NIO Employee's Observations on the New-Energy Vehicle Industry"
 tags:
   - car
-pubDate: 2025-04-06
+pubDate: 2026-04-06
 ---
 As a former NIO employee who regretfully left after less than three years, I've never stopped paying attention to this company and this industry. Over the years I've scattered a lot of fragmented comments and opinions across various places; here I'm trying to weave them into a complete piece, to lay out systematically how I see NIO, the new-energy vehicle (NEV) industry, and the consumer market.
 
