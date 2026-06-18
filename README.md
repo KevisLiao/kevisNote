@@ -1,206 +1,160 @@
-# Slate blog
+# Kevis's Note
 
-English · [中文](./README-zh_CN.md)
+> 人文主义视角下的科技思辨 · <https://note.kevisliao.com>
 
-## Why We build it?
+一个基于 [Astro](https://astro.build/) 的个人博客。在 [Slate](https://github.com/SlateDesign/slate-blog) 主题基础上,扩展了一套**多语言路由 + 构建无关的 AI 自动翻译**体系(中文为源语言,英文为译文,日语预留)。
 
-We love writing and sharing, and we appreciate well-crafted products. That’s why we created this minimalist theme, focusing on content itself, providing a smooth and pure writing and reading experience. Built on the latest framework, it’s faster, lighter, and more efficient.
+---
 
-It also works seamlessly with [Obsidian](https://obsidian.md/), helping you turn your notes into published posts effortlessly.
+## 技术栈
 
-## ✨ Features
+- **Astro 5** + React + TypeScript
+- **Tailwind CSS v4** + `@radix-ui/colors`
+- 内容:Markdown / MDX(Content Collections,glob loader)
+- 代码高亮:`astro-expressive-code`;数学公式:KaTeX(`remark-math` + `rehype-katex`)
+- 部署:**Cloudflare Pages**(根路径语言重定向用 Pages Function)
+- 自动翻译:**Google Gemini**(免费层,`@google/genai`)
 
-- Minimalist design theme
-- Mobile-first responsive layout
-- Light and dark mode support
-- Quick setup with zero configuration required
-- Draft mode with local preview and automatic production filtering
-- Built-in RSS feed with Follow authentication
-- Integrated Algolia search functionality
-- Comprehensive SEO optimization for better search rankings
-- Horizontal multi-image layout with automatic column distribution
-
-## 🪜 Framework
-
-- Astro + React + Typescript  
-- Tailwindcss + @radix-ui/colors
-  - Updated to [Tailwind CSS v4.0](https://tailwindcss.com/blog/tailwindcss-v4) (Jan 10, 2025)
-- Docsearch
-
-## 🔨 Usage
+## 快速开始
 
 ```bash
-# Start local server
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-
-# Build
-npm run build
-# or
-yarn build
-# or
-pnpm build
+npm install
+npm run dev        # 本地开发(不翻译)
+npm run build      # 构建(不翻译,直接用仓库里已有的译文)
+npm run preview    # 预览构建产物
+npm run lint       # tsc + eslint + astro check
+npm run translate  # 手动生成/更新 AI 译文(见下文)
 ```
 
-> If you fork the repository and set it to private, you will lose the association with the upstream repository by default. You can sync the latest version of Slate Blog by running `pnpm sync-latest`.
+要求 Node ≥ 18。
 
-## 🗂 Directory Structure
-
-```
-- plugins/            # Custom plugins
-- src/
-  ├── assets/         # Asset files
-  ├── components/     # Components
-  ├── content/        # Content collections
-  ├── helpers/        # Business logic
-  ├── pages/          # Pages
-  └── typings/        # Common types
-```
-
-> Articles are stored in the `src/content/post` directory, supporting markdown and mdx formats. The filename is the path name. For example, `src/content/post/my-first-post.md` => `https://your-blog.com/blog/my-first-post`.
-
-## Configuration
-
-Theme configuration is done through `slate.config.ts` in the root directory.
-
-| Option | Description | Type | Default |
-| --- | --- | --- | --- |
-| site | Final deployment link | `string` | - |
-| title | Website title | `string` | - |
-| description | Website description | `string` | - |
-| lang | Language | `string` | `zh-CN` |
-| theme | Theme | `{ mode: 'auto' \| 'light' \| 'dark', enableUserChange: boolean }` | `{ mode: 'auto', enableUserChange: true }` |
-| avatar | Avatar | `string` | - |
-| sitemap | Website sitemap configuration | [SitemapOptions](https://docs.astro.build/en/guides/integrations-guide/sitemap/)  | - |
-| readTime | Show reading time | `boolean` | `false` |
-| lastModified | Show last modified time | `boolean` | `false` |
-| algolia | Docsearch configuration | `{ appId: string, apiKey: string, indexName: string }` | - |
-| follow | Follow subscription authentication configuration | `{ feedId: string, userId: string }` | - |
-| footer | Website footer configuration | `{ copyright: string }` | - |
-| socialLinks | Social Links Configuration | `{ icon: [SocialLinkIcon](#SocialLinkIcon), link: string, ariaLabel?: string }` | - |
-
-
-### SocialLinkIcon
-
-```ts
-type SocialLinkIcon =
-  | 'dribbble'
-  | 'facebook'
-  | 'figma'
-  | 'github'
-  | 'instagram'
-  | 'link'
-  | 'mail'
-  | 'notion'
-  | 'rss'
-  | 'threads'
-  | 'x'
-  | 'youtube'
-  | { svg: string }
-```
-
-### Algolia Application
-
-1. Deploy your site first
-2. Apply for an `apiKey` at [algolia](https://docsearch.algolia.com/apply/)
-3. After successful application, configure `algolia` in `slate.config.ts`
-4. Redeploy your site
-
-### Follow Subscription Authentication
-
-1. Register a [follow](https://follow.is/) account
-2. Deploy your site
-3. Click the `+` button on Follow, select `RSS` subscription, and enter the `rss` link (usually `[site]/rss.xml`, where `site` is the value of `site` in `slate.config.ts`)
-4. Redeploy
-
-## Article Frontmatter Description
-
-| Option | Description | Type | Required |
-| --- | --- | --- | --- |
-| title | Article title | `string` | Yes |
-| description | Article description | `string` | No |
-| tags | Article tags | `string[]` | No |
-| draft | Whether it's a draft. When not provided or `false`, `pubDate` must be provided; drafts are only visible in local preview | `boolean` | No |
-| pubDate | Article publication date | `date` | No, required when `draft` is `false` |
-
-**For more details, check the `src/content/config.ts` file**
-
-### Example
-
-```md
 ---
-title: 40 questions
-description: This repo maintains revisons and translations to the list of 40 questions I ask myself each year and each decade.
-tags:
-  - Life
-  - Thinking
-  - Writing
-pubDate: 2025-01-06
----
+
+## 多语言与自动翻译
+
+这是本项目相对原主题的核心改造。
+
+### 内容结构
+
+每篇文章是一个**目录**,目录名即英文 slug,语言用文件名区分:
+
+```
+src/content/post/
+  product-thinking-macbook-neo/
+    zh.md          # 人工源文(中文,必有)
+    en.md          # 人工英文版(可选,优先级最高)
+    en.auto.md     # AI 自动译文(已提交进仓库)
 ```
 
-## Markdown Syntax Support
+- **slug = 目录名**,**locale = 文件名**;无需在 frontmatter 写 slug/lang(由路径推导)。
+- 解析优先级:**人工 `<locale>.md` > AI `<locale>.auto.md` > 中文源文回退**。逻辑见 [`src/helpers/posts.ts`](src/helpers/posts.ts)。
+- AI 译文页面顶部会显示「机器翻译」提示横幅;一旦放入人工 `<locale>.md`,横幅自动消失。
 
-In addition to standard Markdown syntax, the following extended syntax is supported:
+### 路由
 
-### Basic Syntax
-- Headers, lists, blockquotes, code blocks and other basic syntax
-- Tables
-- Links and images
-- **Bold**, *italic*, and ~strikethrough~ text
+- 所有语言都带前缀:`/zh/...`、`/en/...`。
+- 根路径 `/` 按浏览器语言重定向:生产环境走 Cloudflare Pages Function([`functions/index.ts`](functions/index.ts),读 `Accept-Language`),本地开发走 [`src/pages/index.astro`](src/pages/index.astro) 里的 `navigator.language` 兜底。
+- 语言列表配置在 [`slate.config.ts`](slate.config.ts) 的 `i18n` 字段,Astro i18n 在 [`astro.config.mjs`](astro.config.mjs) 启用。
+- UI 文案在 [`src/i18n/lang/`](src/i18n/lang/),通过 `getTranslations(locale)` 按语言取值;hreflang / canonical / 每语言 RSS(`/<lang>/rss.xml`)/ sitemap i18n 均已接入。
 
-### Extended Syntax
-#### Container syntax
-Using `:::` markers
-  ```md
-  :::info
-  This is an information prompt
-  :::
-  ```
+### 自动翻译流程(手动、不在构建期跑)
 
-#### LaTeX Mathematical Formulas
-  - Inline formula: $E = mc^2$
-  - Block formula: $$ E = mc^2 $$
+为避免每次 Cloudflare 构建都消耗翻译额度,**翻译只在本地手动运行**,产物提交进仓库:
 
-#### Support for image captions
-  ```md
-  ![Image caption](image-url)
-  ```
-  
-## Updates
-### Version 1.3.0
-- Support Social Links
-- Optimize RSS article detail generation.
-- Add a script to synchronize the latest slate-blog version
-  
-### Version 1.2.0
-- Support i18n (English and Chinese)
-- Fixed known issues
+```bash
+npm run translate
+```
 
-### Version 1.1.1
-- Fixed known issues
+- 脚本:[`scripts/translate.mjs`](scripts/translate.mjs)。源语言 `zh`,为每个缺少人工译文的目标语言生成 `<locale>.auto.md`。
+- Gemini 是 LLM、原生懂 Markdown:整文件一次翻译,保留 frontmatter / 代码 / 链接 / 结构(只译正文与 `title`/`description`);frontmatter 用源文件做模板回填,避免生成非法 YAML。
+- 按**源文内容哈希**缓存到 `.translations/`(gitignored),源文不变不会重复翻译。
+- 需要 `GEMINI_API_KEY`(见「部署」)。未设置时静默跳过,保留已有译文。
 
-### Version 1.1.0
-- Upgraded to support [Tailwind CSS v4.0](https://tailwindcss.com/blog/tailwindcss-v4)
-- Added dark mode support
-- Fixed known issues
+### 写一篇新文章
 
-## Blogs using this theme
-Here are some blogs built with this theme:
-- [Bluepikachu](https://bluepika.life/)
-- [Chieh的随笔](https://blog.chieh.nyc.mn/)
-- [Feazur](https://blog.feazur.com/)
-- [Folay's Blog](https://www.folay.top/)
-- [LeeZhian](https://leezhian.com/)
-- [nmsisecho](https://astro-example-liard.vercel.app/)
-- [Randy's Blog](https://lutaonan.com/)
-- [Sulle orme dell'Alfiere Nero](https://sulleormedellalfierenero.pusi77.eu.org/)
-- [三墩冰室](https://lmd.gg/)
-- [小企鹅爸爸的生活](https://www.penguinpapa.life/)
+1. 新建 `src/content/post/<english-slug>/zh.md`,写好 frontmatter 和正文。
+2. 本地 `npm run translate` 生成 `en.auto.md`。
+3. 一并提交(包含 `.auto.md`)。
+4. (可选)想要某篇高质量人工英文版,手写 `en.md` 覆盖即可。
 
-## Star History
+> 已上线文章若改 slug 会断链,记得在 [`public/_redirects`](public/_redirects) 加 301。
 
-[![Star History Chart](https://api.star-history.com/svg?repos=SlateDesign/slate-blog&type=Date)](https://www.star-history.com/#SlateDesign/slate-blog&Date)
+---
+
+## 目录结构
+
+```
+functions/            # Cloudflare Pages Functions(/ 语言重定向)
+plugins/              # 自定义 remark/rehype 插件(阅读时长、修改时间等)
+scripts/              # translate.mjs 等脚本
+public/               # 静态资源、_redirects
+src/
+  ├── assets/         # 图片、样式、SVG 图标
+  ├── components/     # 组件(布局、TOC、主题切换、搜索等)
+  ├── content/        # Content Collections(post 目录 + config.ts)
+  ├── helpers/        # posts 解析、配置、工具
+  ├── i18n/           # UI 文案字典 + getTranslations
+  ├── pages/          # [lang]/ 下的本地化页面 + 根重定向
+  └── typings/        # 类型定义
+slate.config.ts       # 站点配置
+```
+
+## 站点配置(`slate.config.ts`)
+
+| 字段 | 说明 | 类型 |
+| --- | --- | --- |
+| `site` | 部署后的站点地址 | `string` |
+| `title` | 站点标题(品牌名,不翻译) | `string` |
+| `i18n` | 多语言配置 | `{ defaultLocale: 'zh', locales: ['zh','en'] }` |
+| `avatar` | 头像 | `string` |
+| `theme` | 主题模式 | `{ mode: 'auto' \| 'light' \| 'dark', enableUserChange: boolean }` |
+| `sitemap` | sitemap 配置(含 i18n) | [SitemapOptions](https://docs.astro.build/en/guides/integrations-guide/sitemap/) |
+| `readTime` | 显示阅读时长 | `boolean` |
+| `lastModified` | 显示最后修改时间 | `boolean` |
+| `footer` | 页脚 | `{ copyright: string }` |
+| `socialLinks` | 社交链接 | `SocialLink[]` |
+
+> 站点副标题/描述按语言切换,写死在 [`src/i18n/lang/`](src/i18n/lang/) 的 `site.description`,**不走构建翻译**。
+
+## 文章 Frontmatter
+
+| 字段 | 说明 | 类型 | 必填 |
+| --- | --- | --- | --- |
+| `title` | 标题 | `string` | 是 |
+| `description` | 描述 | `string` | 否 |
+| `tags` | 标签 | `string[]` | 否 |
+| `draft` | 草稿(仅本地可见;非草稿必须有 `pubDate`) | `boolean` | 否 |
+| `pubDate` | 发布日期 | `date` | `draft` 为 false 时必填 |
+
+完整定义见 [`src/content/config.ts`](src/content/config.ts)。
+
+## Markdown 扩展语法
+
+标准 Markdown 之外还支持:
+
+- 容器语法:`:::info ... :::`
+- LaTeX:行内 `$E = mc^2$`,块级 `$$ E = mc^2 $$`
+- 图片标题:`![图注](image-url)` 自动渲染为 figure caption
+- 代码组、emoji、代码导入等(见 [`astro.config.mjs`](astro.config.mjs) 的 remark/rehype 配置)
+
+---
+
+## 部署(Cloudflare Pages)
+
+1. 连接仓库,框架预设选 Astro,构建命令 `npm run build`,输出目录 `dist`。
+2. 环境变量:
+   - `NODE_VERSION` = `22`(保险起见)
+   - `GEMINI_API_KEY` —— **仅本地手动翻译时需要**;构建不翻译,这里可不配。
+3. `/` 的语言重定向由 `functions/index.ts` 在边缘处理,无需额外配置。
+
+本地翻译用的 key 放在 `.env`(已 gitignore):
+
+```bash
+GEMINI_API_KEY=your_key   # https://aistudio.google.com/apikey 免费申请
+```
+
+---
+
+## 致谢
+
+基于 [Slate](https://github.com/SlateDesign/slate-blog) 主题(MIT)构建,在其之上做了多语言与自动翻译扩展。
