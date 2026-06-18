@@ -1,206 +1,162 @@
-# Slate blog
+# Kevis's Note
 
 English · [中文](./README-zh_CN.md)
 
-## Why We build it?
+> Reflections on technology through a humanist lens · <https://note.kevisliao.com>
 
-We love writing and sharing, and we appreciate well-crafted products. That’s why we created this minimalist theme, focusing on content itself, providing a smooth and pure writing and reading experience. Built on the latest framework, it’s faster, lighter, and more efficient.
+A personal blog built on [Astro](https://astro.build/). On top of the [Slate](https://github.com/SlateDesign/slate-blog) theme, it adds a custom **multilingual routing + build-free AI auto-translation** system (Chinese as the source language, English as the translation, Japanese reserved).
 
-It also works seamlessly with [Obsidian](https://obsidian.md/), helping you turn your notes into published posts effortlessly.
+---
 
-## ✨ Features
+## Tech stack
 
-- Minimalist design theme
-- Mobile-first responsive layout
-- Light and dark mode support
-- Quick setup with zero configuration required
-- Draft mode with local preview and automatic production filtering
-- Built-in RSS feed with Follow authentication
-- Integrated Algolia search functionality
-- Comprehensive SEO optimization for better search rankings
-- Horizontal multi-image layout with automatic column distribution
+- **Astro 5** + React + TypeScript
+- **Tailwind CSS v4** + `@radix-ui/colors`
+- Content: Markdown / MDX (Content Collections, glob loader)
+- Code highlighting: `astro-expressive-code`; math: KaTeX (`remark-math` + `rehype-katex`)
+- Deploy: **Cloudflare Pages** (the `/` language redirect uses a Pages Function)
+- Auto-translation: **Google Gemini** (free tier, `@google/genai`)
 
-## 🪜 Framework
-
-- Astro + React + Typescript  
-- Tailwindcss + @radix-ui/colors
-  - Updated to [Tailwind CSS v4.0](https://tailwindcss.com/blog/tailwindcss-v4) (Jan 10, 2025)
-- Docsearch
-
-## 🔨 Usage
+## Getting started
 
 ```bash
-# Start local server
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-
-# Build
-npm run build
-# or
-yarn build
-# or
-pnpm build
+npm install
+npm run dev        # local dev (no translation)
+npm run build      # build (no translation; serves the translations already in the repo)
+npm run preview    # preview the build output
+npm run lint       # tsc + eslint + astro check
+npm run translate  # manually generate/update AI translations (see below)
 ```
 
-> If you fork the repository and set it to private, you will lose the association with the upstream repository by default. You can sync the latest version of Slate Blog by running `pnpm sync-latest`.
+Requires Node ≥ 18.
 
-## 🗂 Directory Structure
-
-```
-- plugins/            # Custom plugins
-- src/
-  ├── assets/         # Asset files
-  ├── components/     # Components
-  ├── content/        # Content collections
-  ├── helpers/        # Business logic
-  ├── pages/          # Pages
-  └── typings/        # Common types
-```
-
-> Articles are stored in the `src/content/post` directory, supporting markdown and mdx formats. The filename is the path name. For example, `src/content/post/my-first-post.md` => `https://your-blog.com/blog/my-first-post`.
-
-## Configuration
-
-Theme configuration is done through `slate.config.ts` in the root directory.
-
-| Option | Description | Type | Default |
-| --- | --- | --- | --- |
-| site | Final deployment link | `string` | - |
-| title | Website title | `string` | - |
-| description | Website description | `string` | - |
-| lang | Language | `string` | `zh-CN` |
-| theme | Theme | `{ mode: 'auto' \| 'light' \| 'dark', enableUserChange: boolean }` | `{ mode: 'auto', enableUserChange: true }` |
-| avatar | Avatar | `string` | - |
-| sitemap | Website sitemap configuration | [SitemapOptions](https://docs.astro.build/en/guides/integrations-guide/sitemap/)  | - |
-| readTime | Show reading time | `boolean` | `false` |
-| lastModified | Show last modified time | `boolean` | `false` |
-| algolia | Docsearch configuration | `{ appId: string, apiKey: string, indexName: string }` | - |
-| follow | Follow subscription authentication configuration | `{ feedId: string, userId: string }` | - |
-| footer | Website footer configuration | `{ copyright: string }` | - |
-| socialLinks | Social Links Configuration | `{ icon: [SocialLinkIcon](#SocialLinkIcon), link: string, ariaLabel?: string }` | - |
-
-
-### SocialLinkIcon
-
-```ts
-type SocialLinkIcon =
-  | 'dribbble'
-  | 'facebook'
-  | 'figma'
-  | 'github'
-  | 'instagram'
-  | 'link'
-  | 'mail'
-  | 'notion'
-  | 'rss'
-  | 'threads'
-  | 'x'
-  | 'youtube'
-  | { svg: string }
-```
-
-### Algolia Application
-
-1. Deploy your site first
-2. Apply for an `apiKey` at [algolia](https://docsearch.algolia.com/apply/)
-3. After successful application, configure `algolia` in `slate.config.ts`
-4. Redeploy your site
-
-### Follow Subscription Authentication
-
-1. Register a [follow](https://follow.is/) account
-2. Deploy your site
-3. Click the `+` button on Follow, select `RSS` subscription, and enter the `rss` link (usually `[site]/rss.xml`, where `site` is the value of `site` in `slate.config.ts`)
-4. Redeploy
-
-## Article Frontmatter Description
-
-| Option | Description | Type | Required |
-| --- | --- | --- | --- |
-| title | Article title | `string` | Yes |
-| description | Article description | `string` | No |
-| tags | Article tags | `string[]` | No |
-| draft | Whether it's a draft. When not provided or `false`, `pubDate` must be provided; drafts are only visible in local preview | `boolean` | No |
-| pubDate | Article publication date | `date` | No, required when `draft` is `false` |
-
-**For more details, check the `src/content/config.ts` file**
-
-### Example
-
-```md
 ---
-title: 40 questions
-description: This repo maintains revisons and translations to the list of 40 questions I ask myself each year and each decade.
-tags:
-  - Life
-  - Thinking
-  - Writing
-pubDate: 2025-01-06
----
+
+## Multilingual & auto-translation
+
+This is the main customization over the base theme.
+
+### Content model
+
+Each article is a **folder** — the folder name is the English slug, and the locale is the filename:
+
+```
+src/content/post/
+  product-thinking-macbook-neo/
+    zh.md          # human source (Chinese, always present)
+    en.md          # human English version (optional, highest priority)
+    en.auto.md     # AI translation (committed to the repo)
 ```
 
-## Markdown Syntax Support
+- **slug = folder name**, **locale = filename**; no `slug`/`lang` needed in frontmatter (derived from the path).
+- Resolution order: **human `<locale>.md` > AI `<locale>.auto.md` > Chinese-source fallback**. See [`src/helpers/posts.ts`](src/helpers/posts.ts).
+- AI-translated pages show a "machine translated" notice banner; adding a human `<locale>.md` makes it disappear.
 
-In addition to standard Markdown syntax, the following extended syntax is supported:
+### Routing
 
-### Basic Syntax
-- Headers, lists, blockquotes, code blocks and other basic syntax
-- Tables
-- Links and images
-- **Bold**, *italic*, and ~strikethrough~ text
+- All locales are prefixed: `/zh/...`, `/en/...`.
+- The root `/` redirects by browser language: in production via a Cloudflare Pages Function ([`functions/index.ts`](functions/index.ts), reading `Accept-Language`); in local dev via the `navigator.language` fallback in [`src/pages/index.astro`](src/pages/index.astro).
+- Locales are configured in [`slate.config.ts`](slate.config.ts) (`i18n`), and Astro i18n is enabled in [`astro.config.mjs`](astro.config.mjs).
+- UI strings live in [`src/i18n/lang/`](src/i18n/lang/), resolved per locale via `getTranslations(locale)`. hreflang / canonical / per-locale RSS (`/<lang>/rss.xml`) / sitemap i18n are all wired up.
 
-### Extended Syntax
-#### Container syntax
-Using `:::` markers
-  ```md
-  :::info
-  This is an information prompt
-  :::
-  ```
+### Translation workflow (manual — not run at build time)
 
-#### LaTeX Mathematical Formulas
-  - Inline formula: $E = mc^2$
-  - Block formula: $$ E = mc^2 $$
+To avoid spending translation quota on every Cloudflare build, **translation runs locally only**, and the output is committed to the repo:
 
-#### Support for image captions
-  ```md
-  ![Image caption](image-url)
-  ```
-  
-## Updates
-### Version 1.3.0
-- Support Social Links
-- Optimize RSS article detail generation.
-- Add a script to synchronize the latest slate-blog version
-  
-### Version 1.2.0
-- Support i18n (English and Chinese)
-- Fixed known issues
+```bash
+npm run translate
+```
 
-### Version 1.1.1
-- Fixed known issues
+- Script: [`scripts/translate.mjs`](scripts/translate.mjs). Source language is `zh`; it generates `<locale>.auto.md` for every target locale that lacks a human translation.
+- Gemini is an LLM that understands Markdown: the whole file is translated in one shot, preserving frontmatter / code / links / structure (only prose and `title`/`description` are translated). Frontmatter is rebuilt from the source as a template to avoid emitting invalid YAML.
+- Cached by **source-content hash** under `.translations/` (gitignored), so unchanged posts are not re-translated.
+- Requires `GEMINI_API_KEY` (see "Deployment"). When unset it skips silently, leaving existing translations in place.
 
-### Version 1.1.0
-- Upgraded to support [Tailwind CSS v4.0](https://tailwindcss.com/blog/tailwindcss-v4)
-- Added dark mode support
-- Fixed known issues
+### Writing a new post
 
-## Blogs using this theme
-Here are some blogs built with this theme:
-- [Bluepikachu](https://bluepika.life/)
-- [Chieh的随笔](https://blog.chieh.nyc.mn/)
-- [Feazur](https://blog.feazur.com/)
-- [Folay's Blog](https://www.folay.top/)
-- [LeeZhian](https://leezhian.com/)
-- [nmsisecho](https://astro-example-liard.vercel.app/)
-- [Randy's Blog](https://lutaonan.com/)
-- [Sulle orme dell'Alfiere Nero](https://sulleormedellalfierenero.pusi77.eu.org/)
-- [三墩冰室](https://lmd.gg/)
-- [小企鹅爸爸的生活](https://www.penguinpapa.life/)
+1. Create `src/content/post/<english-slug>/zh.md` with frontmatter and body.
+2. Run `npm run translate` locally to generate `en.auto.md`.
+3. Commit everything (including the `.auto.md`).
+4. (Optional) For a high-quality human English version, write `en.md` to override.
 
-## Star History
+> Changing the slug of a published article breaks links — add a 301 in [`public/_redirects`](public/_redirects).
 
-[![Star History Chart](https://api.star-history.com/svg?repos=SlateDesign/slate-blog&type=Date)](https://www.star-history.com/#SlateDesign/slate-blog&Date)
+---
+
+## Directory structure
+
+```
+functions/            # Cloudflare Pages Functions (/ language redirect)
+plugins/              # custom remark/rehype plugins (reading time, modified time, ...)
+scripts/              # translate.mjs and other scripts
+public/               # static assets, _redirects
+src/
+  ├── assets/         # images, styles, SVG icons
+  ├── components/     # components (layouts, TOC, theme switch, search, ...)
+  ├── content/        # Content Collections (post folders + config.ts)
+  ├── helpers/        # post resolution, config, utils
+  ├── i18n/           # UI string dictionaries + getTranslations
+  ├── pages/          # localized pages under [lang]/ + root redirect
+  └── typings/        # type definitions
+slate.config.ts       # site configuration
+```
+
+## Site configuration (`slate.config.ts`)
+
+| Field | Description | Type |
+| --- | --- | --- |
+| `site` | Deployed site URL | `string` |
+| `title` | Site title (brand name, not translated) | `string` |
+| `i18n` | Multilingual configuration | `{ defaultLocale: 'zh', locales: ['zh','en'] }` |
+| `avatar` | Avatar | `string` |
+| `theme` | Theme mode | `{ mode: 'auto' \| 'light' \| 'dark', enableUserChange: boolean }` |
+| `sitemap` | Sitemap config (with i18n) | [SitemapOptions](https://docs.astro.build/en/guides/integrations-guide/sitemap/) |
+| `readTime` | Show reading time | `boolean` |
+| `lastModified` | Show last modified time | `boolean` |
+| `footer` | Footer | `{ copyright: string }` |
+| `socialLinks` | Social links | `SocialLink[]` |
+
+> The site subtitle/description switches by locale and is hardcoded as `site.description` in [`src/i18n/lang/`](src/i18n/lang/) — **not** auto-translated at build.
+
+## Article frontmatter
+
+| Field | Description | Type | Required |
+| --- | --- | --- | --- |
+| `title` | Title | `string` | Yes |
+| `description` | Description | `string` | No |
+| `tags` | Tags | `string[]` | No |
+| `draft` | Draft (local-only; non-drafts require `pubDate`) | `boolean` | No |
+| `pubDate` | Publish date | `date` | Required when `draft` is false |
+
+Full definition in [`src/content/config.ts`](src/content/config.ts).
+
+## Markdown extensions
+
+Beyond standard Markdown:
+
+- Container syntax: `:::info ... :::`
+- LaTeX: inline `$E = mc^2$`, block `$$ E = mc^2 $$`
+- Image captions: `![caption](image-url)` renders as a figure caption
+- Code groups, emoji, code import, etc. (see the remark/rehype config in [`astro.config.mjs`](astro.config.mjs))
+
+---
+
+## Deployment (Cloudflare Pages)
+
+1. Connect the repo; framework preset Astro, build command `npm run build`, output directory `dist`.
+2. Environment variables:
+   - `NODE_VERSION` = `22` (to be safe)
+   - `GEMINI_API_KEY` — **only needed for local manual translation**; the build doesn't translate, so it can be omitted here.
+3. The `/` language redirect is handled at the edge by `functions/index.ts`; no extra config needed.
+
+The key used for local translation goes in `.env` (gitignored):
+
+```bash
+GEMINI_API_KEY=your_key   # free key at https://aistudio.google.com/apikey
+```
+
+---
+
+## Credits
+
+Built on the [Slate](https://github.com/SlateDesign/slate-blog) theme (MIT), extended with multilingual support and auto-translation.
