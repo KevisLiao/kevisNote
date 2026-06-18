@@ -10,6 +10,15 @@ export default {
     /** language switcher aria label */
     language: '语言',
   },
+  /** home page */
+  home: {
+    /** sort control aria label */
+    sort: '排序',
+    /** descending = newest first (default) */
+    sortDesc: '倒序',
+    /** ascending = oldest first */
+    sortAsc: '正序',
+  },
   blog: {
     lastModified: '编辑于',
     readingTime: '{{minutes}} 分钟阅读',
