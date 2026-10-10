@@ -26,6 +26,7 @@ export default defineConfig({
   },
   footer: {
     copyright: '© 2026 Kevis Liao',
+    email: 'kevisliao@gmail.com',
   },
   // socialLinks: [
   //   {

@@ -113,7 +113,7 @@ slate.config.ts       # site configuration
 | `sitemap` | Sitemap config (with i18n) | [SitemapOptions](https://docs.astro.build/en/guides/integrations-guide/sitemap/) |
 | `readTime` | Show reading time | `boolean` |
 | `lastModified` | Show last modified time | `boolean` |
-| `footer` | Footer | `{ copyright: string }` |
+| `footer` | Shared site footer with optional contact email | `{ copyright: string, email?: string }` |
 | `socialLinks` | Social links | `SocialLink[]` |
 
 > The site subtitle/description switches by locale and is hardcoded as `site.description` in [`src/i18n/lang/`](src/i18n/lang/) — **not** auto-translated at build.

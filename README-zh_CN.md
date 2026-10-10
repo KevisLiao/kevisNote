@@ -113,7 +113,7 @@ slate.config.ts       # 站点配置
 | `sitemap` | sitemap 配置(含 i18n) | [SitemapOptions](https://docs.astro.build/en/guides/integrations-guide/sitemap/) |
 | `readTime` | 显示阅读时长 | `boolean` |
 | `lastModified` | 显示最后修改时间 | `boolean` |
-| `footer` | 页脚 | `{ copyright: string }` |
+| `footer` | 全站共用页脚，可配置联系邮箱 | `{ copyright: string, email?: string }` |
 | `socialLinks` | 社交链接 | `SocialLink[]` |
 
 > 站点副标题/描述按语言切换,写死在 [`src/i18n/lang/`](src/i18n/lang/) 的 `site.description`,**不走构建翻译**。

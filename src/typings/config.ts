@@ -76,6 +76,8 @@ export interface SlateConfig {
   /** Website footer configuration */
   footer?: {
     copyright: string;
+    /** Contact email shown in the shared site footer */
+    email?: string;
   };
   /** Follow subscription authentication configuration */
   follow?: {
