@@ -25,7 +25,7 @@ npm run dev        # local dev (no translation)
 npm run build      # build (no translation; serves the translations already in the repo)
 npm run preview    # preview the build output
 npm run lint       # tsc + eslint + astro check
-npm run translate  # manually generate/update AI translations (see below)
+npm run translate  # manually generate missing AI translations (see below)
 ```
 
 Requires Node ≥ 18.
@@ -67,9 +67,9 @@ To avoid spending translation quota on every Cloudflare build, **translation run
 npm run translate
 ```
 
-- Script: [`scripts/translate.mjs`](scripts/translate.mjs). Source language is `zh`; it generates `<locale>.auto.md` for every target locale that lacks a human translation.
+- Script: [`scripts/translate.mjs`](scripts/translate.mjs). Source language is `zh`; it generates `<locale>.auto.md` only when neither `<locale>.md` nor `<locale>.auto.md` exists.
 - Gemini is an LLM that understands Markdown: the whole file is translated in one shot, preserving frontmatter / code / links / structure (only prose and `title`/`description` are translated). Frontmatter is rebuilt from the source as a template to avoid emitting invalid YAML.
-- Cached by **source-content hash** under `.translations/` (gitignored), so unchanged posts are not re-translated.
+- Cached by **source-content hash** under `.translations/cache/` (gitignored). Existing translations are skipped even after source or model changes. To retranslate a post, delete its `<locale>.auto.md` and `.translations/cache/<slug>/`, then run the script again.
 - Requires `GEMINI_API_KEY` (see "Deployment"). When unset it skips silently, leaving existing translations in place.
 
 ### Writing a new post

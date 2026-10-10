@@ -25,7 +25,7 @@ npm run dev        # 本地开发(不翻译)
 npm run build      # 构建(不翻译,直接用仓库里已有的译文)
 npm run preview    # 预览构建产物
 npm run lint       # tsc + eslint + astro check
-npm run translate  # 手动生成/更新 AI 译文(见下文)
+npm run translate  # 手动生成缺失的 AI 译文(见下文)
 ```
 
 要求 Node ≥ 18。
@@ -67,9 +67,9 @@ src/content/post/
 npm run translate
 ```
 
-- 脚本:[`scripts/translate.mjs`](scripts/translate.mjs)。源语言 `zh`,为每个缺少人工译文的目标语言生成 `<locale>.auto.md`。
+- 脚本:[`scripts/translate.mjs`](scripts/translate.mjs)。源语言 `zh`,仅在目标语言的 `<locale>.md` 和 `<locale>.auto.md` 都不存在时生成自动译文。
 - Gemini 是 LLM、原生懂 Markdown:整文件一次翻译,保留 frontmatter / 代码 / 链接 / 结构(只译正文与 `title`/`description`);frontmatter 用源文件做模板回填,避免生成非法 YAML。
-- 按**源文内容哈希**缓存到 `.translations/`(gitignored),源文不变不会重复翻译。
+- 按**源文内容哈希**缓存到 `.translations/cache/`(gitignored)。已有译文会直接跳过,即使源文或模型发生变化。要重译某篇文章,先删除它的 `<locale>.auto.md` 和 `.translations/cache/<slug>/`,再运行脚本。
 - 需要 `GEMINI_API_KEY`(见「部署」)。未设置时静默跳过,保留已有译文。
 
 ### 写一篇新文章
