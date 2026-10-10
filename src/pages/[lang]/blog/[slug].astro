@@ -50,8 +50,13 @@ const homeHref = `/${locale}/`;
 
 const shareLabels = {
   label: t('blog.share.label'),
+  bookmark: t('blog.share.bookmark'),
+  bookmarkHint: t('blog.share.bookmarkHint'),
+  bookmarkMobileHint: t('blog.share.bookmarkMobileHint'),
   copyLink: t('blog.share.copyLink'),
   copied: t('blog.share.copied'),
+  copying: t('blog.share.copying'),
+  copyFailed: t('blog.share.copyFailed'),
   x: t('blog.share.shareTo', { platform: 'X' }),
   facebook: t('blog.share.shareTo', { platform: 'Facebook' }),
   linkedin: t('blog.share.shareTo', { platform: 'LinkedIn' }),
@@ -82,18 +87,28 @@ const shareLabels = {
   <div class="blog-content">
     <div class="mb-16">
       <h1>{entry.data.title}</h1>
-      <div class="text-slate10 flex items-center gap-2">
-        <span>{formattedPubDate}</span>
-        {!!slateConfig.readTime && <span>·</span>}
-        {
-          slateConfig.readTime && (
-            <div>
-              {t('blog.readingTime', {
-                minutes: remarkPluginFrontmatter.minutesRead,
-              })}
-            </div>
-          )
-        }
+      <div class="text-slate10">
+        <div class="flex flex-wrap items-center gap-2">
+          <span>{formattedPubDate}</span>
+          {!!slateConfig.readTime && <span>·</span>}
+          {
+            slateConfig.readTime && (
+              <span>
+                {t('blog.readingTime', {
+                  minutes: remarkPluginFrontmatter.minutesRead,
+                })}
+              </span>
+            )
+          }
+        </div>
+        <Share
+          title={entry.data.title}
+          url={Astro.url.href}
+          labels={shareLabels}
+          showLabel={false}
+          className="mt-3 max-w-full"
+          client:load
+        />
       </div>
       {
         isAuto && (
@@ -115,8 +130,8 @@ const shareLabels = {
       title={entry.data.title}
       url={Astro.url.href}
       labels={shareLabels}
-      className="border-slate4 mt-12 border-t pt-6"
-      client:idle
+      className="mt-12 pt-6"
+      client:load
     />
   </div>
   <!-- E 内容 -->

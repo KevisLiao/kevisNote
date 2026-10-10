@@ -1,14 +1,22 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
 import './index.css';
 
 export interface ShareLabels {
-  /** Section label, e.g. "分享" / "Share" */
+  /** Accessible section label, e.g. "分享" / "Share" */
   label: string;
+  /** Bookmark button label */
+  bookmark: string;
+  /** Desktop bookmark instructions, with a {{shortcut}} placeholder */
+  bookmarkHint: string;
+  /** Mobile bookmark instructions */
+  bookmarkMobileHint: string;
   /** Copy-link button label */
   copyLink: string;
   /** Feedback shown after the link is copied */
   copied: string;
+  copying: string;
+  copyFailed: string;
   /** aria-label for sharing to X */
   x: string;
   /** aria-label for sharing to Facebook */
@@ -28,6 +36,8 @@ export interface ShareProps {
   url: string;
   /** Localized labels */
   labels: ShareLabels;
+  /** Show the visible section label (used by the bottom toolbar) */
+  showLabel?: boolean;
   className?: string;
 }
 
@@ -37,22 +47,77 @@ interface ShareTarget {
   href: string;
 }
 
-const actionClass =
-  'flex h-9 w-9 items-center justify-center rounded-full text-slate10 transition-all hover:bg-slate3 hover:text-slate12';
+interface Feedback {
+  kind: 'bookmark' | 'copying' | 'copied' | 'copyError';
+  message: string;
+}
 
 function ShareIcon({ name }: { name: string }) {
   return <span className={classNames('sb-share-icon', name)} aria-hidden="true" />;
 }
 
-function Share({ title, url, labels, className }: ShareProps) {
+function Share({ title, url, labels, showLabel = true, className }: ShareProps) {
   const [shareUrl, setShareUrl] = useState(url);
-  const [copied, setCopied] = useState(false);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const manualCopyRef = useRef<HTMLInputElement>(null);
+  const tooltipId = useId();
+  const bookmarkTooltipId = `${tooltipId}-bookmark`;
+  const copyTooltipId = `${tooltipId}-copy`;
+  const bookmarkOpen = feedback?.kind === 'bookmark';
+  const copyOpen = Boolean(feedback && !bookmarkOpen);
 
   // Prefer the live browser URL once mounted; keeps SSR markup stable to avoid
   // hydration mismatches.
   useEffect(() => {
     setShareUrl(window.location.href);
   }, []);
+
+  useEffect(() => {
+    if (!feedback) return;
+
+    const handleOutsideClick = (event: PointerEvent) => {
+      if (!actionsRef.current?.contains(event.target as Node)) {
+        setFeedback(null);
+      }
+    };
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setFeedback(null);
+    };
+
+    document.addEventListener('pointerdown', handleOutsideClick);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('pointerdown', handleOutsideClick);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [feedback]);
+
+  useEffect(() => {
+    if (feedback?.kind !== 'copied') return;
+    const timeout = window.setTimeout(() => setFeedback(null), 2500);
+    return () => window.clearTimeout(timeout);
+  }, [feedback]);
+
+  useEffect(() => {
+    if (feedback?.kind === 'copyError') {
+      manualCopyRef.current?.focus();
+      manualCopyRef.current?.select();
+    }
+  }, [feedback]);
+
+  const handleBookmark = useCallback(() => {
+    const isMac = /Macintosh|Mac OS X/.test(navigator.userAgent);
+    const isMobile =
+      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      (isMac && navigator.maxTouchPoints > 1);
+    const hint = isMobile
+      ? labels.bookmarkMobileHint
+      : labels.bookmarkHint.replace('{{shortcut}}', isMac ? '⌘ + D' : 'Ctrl + D');
+    setFeedback((current) =>
+      current?.kind === 'bookmark' ? null : { kind: 'bookmark', message: hint },
+    );
+  }, [labels]);
 
   const targets = useMemo<ShareTarget[]>(() => {
     const u = encodeURIComponent(shareUrl);
@@ -88,64 +153,125 @@ function Share({ title, url, labels, className }: ShareProps) {
   }, [shareUrl, title, labels]);
 
   const handleCopy = useCallback(async () => {
+    setFeedback({ kind: 'copying', message: labels.copying });
+    let didCopy = false;
     try {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(shareUrl);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = shareUrl;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
+        didCopy = true;
       }
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Clipboard access can be denied; fail silently.
+      // Try the selection-based fallback if clipboard permission is denied.
     }
-  }, [shareUrl]);
+
+    if (!didCopy) {
+      const focusedElement = document.activeElement;
+      const textarea = document.createElement('textarea');
+      textarea.value = shareUrl;
+      textarea.readOnly = true;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      try {
+        textarea.select();
+        didCopy = document.execCommand('copy');
+      } catch {
+        didCopy = false;
+      } finally {
+        textarea.remove();
+        if (focusedElement instanceof HTMLElement) {
+          focusedElement.focus({ preventScroll: true });
+        }
+      }
+    }
+
+    setFeedback((current) =>
+      current?.kind === 'copying'
+        ? {
+            kind: didCopy ? 'copied' : 'copyError',
+            message: didCopy ? labels.copied : labels.copyFailed,
+          }
+        : current,
+    );
+  }, [shareUrl, labels]);
 
   return (
     <section
-      className={classNames('flex flex-wrap items-center gap-3', className)}
+      aria-label={labels.label}
+      className={classNames('sb-share heti-skip', className)}
     >
-      <span className="text-sm text-slate10">{labels.label}</span>
-      <div className="flex items-center gap-1">
-        <span className="relative">
-          <button
-            type="button"
-            className={actionClass}
-            onClick={handleCopy}
-            aria-label={copied ? labels.copied : labels.copyLink}
-            title={copied ? labels.copied : labels.copyLink}
-          >
-            <ShareIcon name="link" />
-          </button>
-          {copied && (
-            <span
-              role="status"
-              className="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-slate12 px-2 py-1 text-xs text-slate1"
+      {showLabel && <span className="sb-share-label">{labels.label}</span>}
+      <div className="sb-share-groups">
+        <div className="sb-share-personal" ref={actionsRef}>
+          <div className="sb-share-control">
+            <button
+              type="button"
+              className="sb-share-action"
+              onClick={handleBookmark}
+              aria-label={labels.bookmark}
+              aria-describedby={bookmarkTooltipId}
+              aria-expanded={bookmarkOpen}
             >
-              {labels.copied}
+              <ShareIcon name="bookmark" />
+            </button>
+            <span
+              id={bookmarkTooltipId}
+              role={bookmarkOpen ? 'status' : 'tooltip'}
+              className={classNames('sb-share-tooltip', {
+                'sb-share-hover-hint': !bookmarkOpen,
+              })}
+            >
+              {bookmarkOpen ? feedback?.message : labels.bookmark}
             </span>
-          )}
-        </span>
-        {targets.map((target) => (
-          <a
-            key={target.name}
-            className={actionClass}
-            href={target.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={target.label}
-            title={target.label}
-          >
-            <ShareIcon name={target.name} />
-          </a>
-        ))}
+          </div>
+          <div className="sb-share-control">
+            <button
+              type="button"
+              className="sb-share-action"
+              onClick={handleCopy}
+              disabled={feedback?.kind === 'copying'}
+              aria-label={feedback?.kind === 'copied' ? labels.copied : labels.copyLink}
+              aria-describedby={copyTooltipId}
+            >
+              <ShareIcon name="link" />
+            </button>
+            <span
+              id={copyTooltipId}
+              role={copyOpen ? 'status' : 'tooltip'}
+              className={classNames('sb-share-tooltip', {
+                'sb-share-hover-hint': !copyOpen,
+              })}
+            >
+              {copyOpen ? feedback?.message : labels.copyLink}
+              {feedback?.kind === 'copyError' && (
+                <input
+                  ref={manualCopyRef}
+                  className="sb-share-manual-copy"
+                  aria-label={labels.copyLink}
+                  value={shareUrl}
+                  readOnly
+                  onFocus={(event) => event.currentTarget.select()}
+                />
+              )}
+            </span>
+          </div>
+        </div>
+        <span className="sb-share-divider" role="separator" aria-orientation="vertical" />
+        <div className="sb-share-social">
+          {targets.map((target) => (
+            <a
+              key={target.name}
+              className="sb-share-action"
+              href={target.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={target.label}
+              title={target.label}
+            >
+              <ShareIcon name={target.name} />
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   );

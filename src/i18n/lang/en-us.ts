@@ -34,12 +34,17 @@ export default {
     },
     /** article sharing */
     share: {
-      /** section label */
+      /** accessible section label */
       label: 'Share',
+      bookmark: 'Bookmark this article',
+      bookmarkHint: 'Press {{shortcut}} to bookmark this article in your browser.',
+      bookmarkMobileHint: 'Open your browser’s menu or share menu and choose “Add bookmark”.',
       /** copy-link button label */
       copyLink: 'Copy link',
       /** feedback after the link is copied */
       copied: 'Link copied',
+      copying: 'Copying…',
+      copyFailed: 'Automatic copying failed. Copy the link below manually.',
       /** aria-label template for social platforms */
       shareTo: 'Share on {{platform}}',
       /** aria-label for email sharing */
