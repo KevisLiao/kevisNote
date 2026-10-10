@@ -72,7 +72,7 @@ According to the J.D. Power 2026 China New Energy Vehicle Customer Service Index
 
 | Metric | Finding |
 |---|---:|
-| Repair costs for collision-damaged vehicles | ~1.7× higher than for ICE vehicles |
+| Repair costs for collision-damaged vehicles | About 1.7 times those for ICE vehicles |
 | YoY change in average spend per service visit | +23.3% |
 | YoY change in service wait times | +45.6% |
 | Net Promoter Score for service in a separate brand reputation study | Down 14.9 points YoY |
@@ -134,7 +134,7 @@ HIMA (Harmony Intelligent Mobility Alliance) is not a single brand with a unifie
 | **Luxeed / Chery** | Initial quality leader in segment for R7 EV | Early S7 delivery bottlenecks; scattered complaints over service and assembly | Select models verified; overall system still maturing |
 | **Stelato / BAIC** | Clear investments in cabin luxury and ride comfort | Complaints regarding NVH and interior rattles; limited long-term survey data | High-end refinement remains to be proven |
 | **Maextro / JAC** | Investments in ultra-luxury tech and vehicle engineering | Brake pedal test failure on the V800 | Critical safety alert; requires formal investigation |
-| **Shangjie / SAIC** | Democratizing smart tech; generally acceptable initial commercial reviews for H5 | Controversies over facelift owner perks; insufficient long-term reliability data | Long-term quality not yet proven |
+| **Shangjie / SAIC** | Democratizing smart tech; generally acceptable results in initial product-quality assessments for the H5 | Controversies over facelift owner perks; insufficient long-term reliability data | Long-term quality not yet proven |
 
 Three points warrant particular emphasis:
 
@@ -266,7 +266,7 @@ These incidents differ in nature, but all touch on an automaker's long-term resp
 
 ---
 
-## Conclusion: Those Left Standing Aren't Necessarily the Best Automakers
+## Conclusion: Those Left Standing Won't All Be Good Automakers
 
 The intense competition sweeping China's NEV market since 2024 is laying bare the real differences in automakers' business acumen, engineering discipline, and underlying values.
 
@@ -278,11 +278,11 @@ Yet neither guarantees that the company is willing to bear the costs required to
 
 True product long-termism lives where the spotlight rarely shines—and where consumers rarely notice on day one: thorough engineering validation, prudent safety margins, durable components, a dependable service network, and the integrity to take ownership when things go wrong.
 
-**When the tide recedes, those left standing won't necessarily be the best car companies.**
+**When the tide recedes, those left standing won't all be good automakers.**
 
 The companies that prevail in the battle for capital and market share may not make the best cars; and vehicles with lower price tags and longer feature lists will not necessarily cost less to own over the long haul.
 
-**Surviving over the long term is a business achievement; delivering reliable, dependable value to consumers over the long term is the true mark of a great product.**
+**Surviving over the long term is a business achievement; delivering reliable, predictable value to consumers over the long term is the true mark of a great product.**
 
 ---
 
