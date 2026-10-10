@@ -27,6 +27,11 @@ export default {
     readingTime: '{{minutes}} Min Read',
     /** AI auto-translation notice shown atop machine-translated articles */
     aiTranslated: 'This article was machine-translated by AI and may contain inaccuracies.',
+    navigation: {
+      label: 'Article navigation',
+      previous: 'Previous post',
+      next: 'Next post',
+    },
     /** article sharing */
     share: {
       /** section label */

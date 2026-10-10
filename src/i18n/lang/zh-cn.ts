@@ -24,6 +24,11 @@ export default {
     readingTime: '{{minutes}} 分钟阅读',
     /** AI auto-translation notice shown atop machine-translated articles */
     aiTranslated: '本文由 AI 自动翻译，可能存在偏差。',
+    navigation: {
+      label: '文章导航',
+      previous: '上一篇',
+      next: '下一篇',
+    },
     /** article sharing */
     share: {
       /** section label */

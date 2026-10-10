@@ -11,7 +11,11 @@ import Toc from '@/components/toc';
 import CodeGroupEvent from '@/components/code-group-event';
 import slateConfig from '~@/slate.config';
 import { getFullTitle } from '@/helpers/utils';
-import { getPostPaths, type ResolvedPost } from '@/helpers/posts';
+import {
+  getLocalizedPosts,
+  getPostPaths,
+  type ResolvedPost,
+} from '@/helpers/posts';
 import 'remark-block-containers/css';
 import '@/assets/style/blog.css';
 
@@ -21,9 +25,14 @@ export async function getStaticPaths() {
 
 type Props = ResolvedPost;
 
-const { entry, locale, isAuto } = Astro.props as Props;
+const { entry, locale, isAuto, slug } = Astro.props as Props;
 const t = getTranslations(locale);
 const { Content, remarkPluginFrontmatter, headings } = await render(entry);
+const posts = await getLocalizedPosts(locale);
+const currentIndex = posts.findIndex((post) => post.slug === slug);
+// The list is newest-first; previous/next follow chronological publication order.
+const previousPost = currentIndex >= 0 ? posts[currentIndex + 1] : undefined;
+const nextPost = currentIndex > 0 ? posts[currentIndex - 1] : undefined;
 
 const lastModifiedDate = dayjs(
   remarkPluginFrontmatter.lastModified
@@ -51,7 +60,11 @@ const shareLabels = {
 };
 ---
 
-<PageLayout title={entry.data.title} description={entry.data.description} locale={locale}>
+<PageLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  locale={locale}
+>
   <ArticleJsonLd
     slot="json-ld"
     title={getFullTitle(entry.data.title)}
@@ -84,7 +97,7 @@ const shareLabels = {
       </div>
       {
         isAuto && (
-          <div class="mt-4 rounded-md bg-slate3 px-3 py-2 text-sm text-slate10">
+          <div class="bg-slate3 text-slate10 mt-4 rounded-md px-3 py-2 text-sm">
             {t('blog.aiTranslated')}
           </div>
         )
@@ -102,11 +115,50 @@ const shareLabels = {
       title={entry.data.title}
       url={Astro.url.href}
       labels={shareLabels}
-      className="mt-12 border-t border-slate4 pt-6"
+      className="border-slate4 mt-12 border-t pt-6"
       client:idle
     />
   </div>
   <!-- E 内容 -->
+  {
+    (previousPost || nextPost) && (
+      <nav
+        aria-label={t('blog.navigation.label')}
+        class="border-slate4 mb-16 grid grid-cols-1 gap-4 border-t pt-6 sm:grid-cols-2"
+      >
+        {previousPost && (
+          <a
+            href={`/${locale}/blog/${previousPost.slug}`}
+            rel="prev"
+            class="hover:bg-slate3 focus-visible:outline-slate8 min-w-0 rounded-lg p-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
+          >
+            <span class="text-slate10 flex items-center gap-2 text-sm">
+              <span aria-hidden="true">←</span>
+              {t('blog.navigation.previous')}
+            </span>
+            <span class="text-slate12 mt-2 block text-base leading-relaxed break-words">
+              {previousPost.entry.data.title}
+            </span>
+          </a>
+        )}
+        {nextPost && (
+          <a
+            href={`/${locale}/blog/${nextPost.slug}`}
+            rel="next"
+            class="hover:bg-slate3 focus-visible:outline-slate8 min-w-0 rounded-lg p-3 text-right transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2"
+          >
+            <span class="text-slate10 flex items-center justify-end gap-2 text-sm">
+              {t('blog.navigation.next')}
+              <span aria-hidden="true">→</span>
+            </span>
+            <span class="text-slate12 mt-2 block text-base leading-relaxed break-words">
+              {nextPost.entry.data.title}
+            </span>
+          </a>
+        )}
+      </nav>
+    )
+  }
   <!-- S 目录 -->
   <Toc
     className="fixed top-0 right-0 bottom-0 hidden w-64 xl:block"
